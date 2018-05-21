@@ -44,9 +44,7 @@ int main() {
 	        puts("Connection accepted");
 
 	        //Reply to the client
-	        message = "You are directed to index.html page\n";
-	        write(new_socket , message , strlen(message));
-
+	     
 	        pthread_t sniffer_thread;
 	        new_sock = malloc(1);
 	        *new_sock = new_socket;
@@ -77,18 +75,32 @@ void *connection_handler(void *socket_desc)
     //Get the socket descriptor
     int sock = *(int*)socket_desc;
 		FILE *html_data;
+
+
 		html_data =  fopen("index.html", "r");
 
-		char response_data[1024];
-		fgets(response_data, 1024, html_data);
 
-	char http_header[2048] = "HTTP/1.1 200 OK\r\n\n";
-		strcat(http_header, response_data);
+		//char response_data[1024];
+		//fgets(response_data, 1024, html_data);
+		char http_header[5000] = "HTTP/1.1 200 OK\r\n";
+	//	char type[1024]="Content-Type: application/pdf\r\n\r\n";
 
-    send(sock,http_header,sizeof(http_header),0);
+
+
+
+    char string[100];
+		while(fgets(string, 100, html_data)) {
+		   write(sock, string, strlen(string));
+
+		}
+	//char http_header[2048] = "HTTP/1.1 200 OK\r\n\n";
+//	strcat(http_header, document);
+
+  //  send(sock,http_header,sizeof(http_header),0);
 
     //Free the socket pointer
-    free(socket_desc);
 
+
+free(socket_desc);
     return 0;
 }
